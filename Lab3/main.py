@@ -2,32 +2,44 @@ import random
 import re
 
 
+def find_letter_indices(letter, matrix):
+    for row_index, row in enumerate(matrix):
+        for col_index, value in enumerate(row):
+            if value == letter:
+                return row_index, col_index
+    # If the letter is not found, return None or another appropriate value
+    return None
+
+
 def romanian_language(string):
-    pattern = r'^[a-zA-ZăĂâÂșȘțȚîÎ]+$'
-    return bool(re.match(pattern, string))
+    romanian_pattern = r'^[a-zA-ZăĂâÂșȘțȚîÎ]+$'
+    if re.match(romanian_pattern, string):
+        return True
+    else:
+        print(
+            "Error: The string should only contain characters from the Romanian alphabet (A-Z, a-z, and special Romanian characters).")
+        return False
 
 
 def add_letters(message):
-    to_insert = ['Q', 'X', 'Z']
-    message, i = list(message), 0
-    while i < len(message) - 1:
-        if message[i] == message[i + 1]:
-            message.insert(i + 1, random.choice(to_insert))
+    # Characters to insert when two identical characters are adjacent
+    insertion_characters = ['Q', 'X', 'Z']
+    message_list = list(message)  # Convert the message to a list for easier manipulation
+    i = 0
+    while i < len(message_list) - 1:
+        if message_list[i] == message_list[i + 1]:
+            # Insert a random character from the insertion list
+            message_list.insert(i + 1, random.choice(insertion_characters))
         i += 2
-    # Add additional letter to the end  if the message has an odd length
-    if len(message) % 2 != 0:
-        message.append('F')
-    return message
-
-
-def find_letter_indices(letter, matrix):
-    for i in range(len(matrix)):
-        for j in range(len(matrix[0])):
-            if matrix[i][j] == letter:
-                return i, j
+    # If the message has an odd length, add additional letter
+    if len(message_list) % 2 != 0:
+        message_list.append('F')
+    # Convert the list back to a string
+    return "".join(message_list)
 
 
 def encrypt(message, matrix):
+    message = list(message)  # Convert the message to a list
     for i in range(0, len(message), 2):
         letter1, letter2 = message[i], message[i + 1]
         row1, column1 = find_letter_indices(letter1, matrix)
@@ -50,14 +62,16 @@ def encrypt(message, matrix):
             next_row2 = (row2 + 1) % rows
             message[i] = matrix[next_row1][column1]
             message[i + 1] = matrix[next_row2][column2]
-    return "".join(message)
+    return "".join(message)  # Convert the list back to a string
 
 
 def decrypt(ciphertext, matrix):
+    ciphertext = list(ciphertext)  # Convert the ciphertext to a list
     for i in range(0, len(ciphertext), 2):
         letter1, letter2 = ciphertext[i], ciphertext[i + 1]
         row1, column1 = find_letter_indices(letter1, matrix)
-        row2, column2 = find_letter_indices(letter2, matrix)  # Implement first condition.
+        row2, column2 = find_letter_indices(letter2, matrix)
+        # Implement first condition.
         if row1 != row2 and column1 != column2:
             ciphertext[i] = matrix[row1][column2]
             ciphertext[i + 1] = matrix[row2][column1]
@@ -86,19 +100,30 @@ def decrypt(ciphertext, matrix):
     # Eliminate the last letter added
     if ciphertext[-1] == "F":
         ciphertext.pop()
-    return "".join(ciphertext)
+    return "".join(ciphertext)  # Convert the list back to a string
 
 
 def create_matrix(key):
-    # matrix with 5 rows and 6 columns
-    matrix = []
+    # Create the initial matrix with 5 rows and 6 columns
+    matrix = [['' for _ in range(6)] for _ in range(5)]
+    # Define the alphabet without J and duplicate letters
     alphabet = "AĂÂBCDEFGHIÎKLMNOPQRSȘTȚUVWXYZ"
-    new_alphabet = ''.join(dict.fromkeys(key + alphabet))
-
-    for i in range(0, 30, 6):
-        row = new_alphabet[i:i + 6]
-        matrix.append(list(row))
-
+    unique_key = ''.join(dict.fromkeys(key.upper()))  # Remove duplicates and make uppercase
+    # Fill the matrix with unique characters from the key and then the remaining alphabet
+    key_index = 0
+    for row in range(5):
+        for col in range(6):
+            if key_index < len(unique_key):
+                matrix[row][col] = unique_key[key_index]
+                key_index += 1
+            else:
+                # Fill with remaining alphabet characters
+                while alphabet and matrix[row][col] == '':
+                    letter = alphabet[0]
+                    alphabet = alphabet[1:]
+                    # Skip the letter 'J' if it's in the alphabet
+                    if letter != 'J':
+                        matrix[row][col] = letter
     return matrix
 
 
@@ -106,7 +131,8 @@ def input_key():
     key = input("Key: ")
     key = key.replace(" ", "")
     while not (romanian_language(key) and len(key) >= 7):
-        print("Ensure that the characters are within the range 'A'-'Z' or 'a'-'z' (romanian lang.), and that the key is at least 7 characters long")
+        print(
+            "Ensure that the characters are within the range 'A'-'Z' or 'a'-'z' (romanian lang.), and that the key is at least 7 characters long")
         key = input("Key: ")
         key = key.replace(" ", "")
     key = key.upper()
