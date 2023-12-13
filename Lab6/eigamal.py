@@ -12,7 +12,7 @@ hash_object.update(msg.encode())
 # Convert the resulting hash digest (byte string) to an integer (hashed_message) for further processing or storage.
 hashed_message = int.from_bytes(hash_object.digest(), byteorder='big')
 
-# Ensure the hash has a specific bit length
+# Ensure the hash has a specific bit length.
 hash_size = 384
 hashed_message = hashed_message << (hash_size - hashed_message.bit_length())
 print("Hashed message:", hashed_message)
