@@ -9,10 +9,11 @@ msg = "Lupascu Felicia"
 # Hash the message using SHA3-384
 hash_object = hashlib.sha3_384()
 hash_object.update(msg.encode())
+# Convert the resulting hash digest (byte string) to an integer (hashed_message) for further processing or storage.
 hashed_message = int.from_bytes(hash_object.digest(), byteorder='big')
 
 # Ensure the hash has a specific bit length
-hash_size = 512
+hash_size = 384
 hashed_message = hashed_message << (hash_size - hashed_message.bit_length())
 print("Hashed message:", hashed_message)
 
@@ -36,6 +37,7 @@ while True:
     if gcd_value == 1:
         # Calculate signature components 'r' and 's'
         r = pow(g, k, p)
+        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!REMEMBER FORMULA
         s = (pow(k, -1, p - 1) * (hashed_message - a * r)) % (p - 1)
         signature = (r, s)
         print("Signature:", signature)
@@ -49,5 +51,13 @@ while True:
         v2 = pow(g, hashed_message, p)
         verification = (v1 == v2)
 
+        # Print v1 and v2
+        print("v1:", v1)
+        print("v2:", v2)
         print("Signature Verification:", verification)
         break
+
+        # primul calculator trimite p,g,b(cheie publica) si semnatura
+        # al doilea calculator verifica semnatura  v1=(b^r*r^s) mod p
+        #                                           v2=g^hash mod p
+        # verifica daca v1=v2

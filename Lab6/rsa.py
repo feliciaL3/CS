@@ -4,6 +4,7 @@ import hashlib
 from sympy import isprime
 import math
 
+
 # Function to generate a large prime number with a given number of bits
 def generate_large_prime(bits):
     while True:
@@ -12,6 +13,7 @@ def generate_large_prime(bits):
 
         if isprime(num):
             return num
+
 
 # Function to choose a public exponent for RSA
 def choose_public_exponent(phi_n):
@@ -22,6 +24,7 @@ def choose_public_exponent(phi_n):
 
     return e
 
+
 # Message to be signed
 msg = "Lupascu Felicia"
 print("Message:", msg)
@@ -30,6 +33,7 @@ print("Message:", msg)
 hash_object = hashlib.sha3_512()
 # Update the hash object with the encoded message
 hash_object.update(msg.encode())
+# Convert the resulting hash digest (byte string) to an integer (hashed_message) for further processing or storage.
 hashed_message = int.from_bytes(hash_object.digest(), byteorder='big')
 
 # Ensure the hash has a specific bit length
@@ -54,6 +58,9 @@ d = pow(e, -1, phi_n)
 
 # Calculate the digital signature using the private exponent
 signature = pow(hashed_message, d, n)
+
+# primul calculator trimite n,e,signature si hashed message
+# al doilea calculator utilizeaza formula Verification = powermod( signature, e,n,)
 
 # Verify the signature using the public exponent
 verification = pow(signature, e, n)
