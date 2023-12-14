@@ -47,10 +47,15 @@ while True:
             # Convert the message to its binary representation
             message = ''.join(format(ord(i), '08b') for i in message)
             print('\nMessage in binary format:\n', message, '\n')
+            # mesajul initial in binar dar fiecare character separat
+            binary_message_4 = ' '.join([message[i:i+4] for i in range(0, len(message), 4)])
+            print(binary_message_4)
+            print("")
 
             print('Initial permutation table:')
             for i in range(64):
                 print(initial_permutation[i], ' ', end='')
+                # Acest segment verifică dacă s-au afișat deja 8 valori (deoarece există 8 coloane în tabel)
                 if ((i + 1) % 8) == 0:
                     print()
 
